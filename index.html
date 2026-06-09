@@ -4,12 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SIMOES – Bilan de Maintenance</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#e87820">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;600;700;800&family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <style>
 :root{--noir:#0d0f14;--acier:#1c2232;--acier2:#242c3d;--bleu:#1a6fc4;--bleu-vif:#2589e8;--orange:#e87820;--gris:#b8c2d4;--blanc:#f0f4fa;--vert:#27ae60;--rouge:#e74c3c;--jaune:#f39c12;--border:rgba(255,255,255,0.08)}
 *{box-sizing:border-box;margin:0;padding:0}
@@ -148,23 +143,7 @@ canvas{border-radius:4px;background:rgba(0,0,0,.25);display:block;margin:0 auto;
 .bulk-copy-hint{font-size:.72rem;color:var(--bleu-vif);font-style:italic;margin-left:8px}
 .copy-from{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
 
-/* MODAL TECHNICIEN */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.modal-box{background:var(--acier);border:2px solid var(--orange);border-radius:12px;padding:40px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-.modal-box h2{font-family:'Barlow Condensed',sans-serif;font-size:1.8rem;font-weight:800;letter-spacing:3px;text-transform:uppercase;color:var(--orange);margin-bottom:6px}
-.modal-box p{font-size:.85rem;color:var(--gris);margin-bottom:24px}
-.tech-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
-.tech-btn{padding:13px 20px;background:rgba(0,0,0,.3);border:1px solid var(--border);border-radius:6px;color:var(--blanc);font-family:'Barlow',sans-serif;font-size:.95rem;font-weight:500;cursor:pointer;transition:all .2s;text-align:left}
-.tech-btn:hover{background:var(--bleu);border-color:var(--bleu-vif);transform:translateX(4px)}
-/* SEND MODAL */
-.send-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:2000;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
-.send-modal.show{display:flex}
-.send-box{background:var(--acier);border:2px solid var(--bleu);border-radius:12px;padding:32px;max-width:480px;width:90%;box-shadow:0 20px 60px rgba(0,0,0,.6)}
-.send-box h3{font-family:'Barlow Condensed',sans-serif;font-size:1.4rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--bleu-vif);margin-bottom:16px}
-.send-status{padding:12px;border-radius:6px;font-size:.85rem;margin-top:12px;display:none}
-.send-status.ok{background:rgba(39,174,96,.2);border:1px solid var(--vert);color:#2ecc71;display:block}
-.send-status.err{background:rgba(231,76,60,.2);border:1px solid var(--rouge);color:#e74c3c;display:block}
-.send-status.loading{background:rgba(26,111,196,.2);border:1px solid var(--bleu);color:var(--bleu-vif);display:block}
+/* PRINT */
 @media print{
   body{background:#fff!important;color:#000!important;font-size:11px}
   header,.tabs,.form-header-btns,.eq-tabs,.sig-controls,.toast{display:none!important}
@@ -226,7 +205,6 @@ canvas{border-radius:4px;background:rgba(0,0,0,.25);display:block;margin:0 auto;
       <button class="btn btn-orange" onclick="resetForm()">🗑 Réinit.</button>
       <button class="btn btn-green" onclick="saveBilan()">💾 Enregistrer</button>
       <button class="btn btn-grey" onclick="window.print()">🖨 Imprimer</button>
-      <button class="btn btn-blue" onclick="openSendModal()" style="background:linear-gradient(135deg,#16a085,#1abc9c);">📤 Envoyer le bilan</button>
     </div>
   </div>
 
@@ -280,19 +258,7 @@ canvas{border-radius:4px;background:rgba(0,0,0,.25);display:block;margin:0 auto;
     <div class="grid-4" style="margin-bottom:12px;">
       <div class="field"><label>N° Bilan</label><input type="text" id="bilanNum" readonly style="opacity:.7"></div>
       <div class="field"><label>Date de visite</label><input type="date" id="bilanDate"></div>
-      <div class="field"><label>Technicien SIMOES</label>
-        <select id="techName">
-          <option value="">-- Sélectionner --</option>
-          <option>Dany Sampaio</option>
-          <option>Ghenadi Pavlenco</option>
-          <option>Bedirhan Gunder</option>
-          <option>Olivier Simoes</option>
-          <option>Bruno Rodrigues</option>
-          <option>Alex Martins</option>
-          <option>Simao Quintas</option>
-          <option>Leandro Perreira</option>
-        </select>
-      </div>
+      <div class="field"><label>Technicien SIMOES</label><input type="text" id="techName" placeholder="Nom du technicien"></div>
       <div class="field"><label>N° Contrat</label><input type="text" id="contratNum" placeholder="Réf. contrat"></div>
     </div>
     <div class="grid-3" style="margin-bottom:12px;">
@@ -1174,197 +1140,5 @@ renderAllChecklists();
 initSignature('sigCanvas');
 initSignature('sigClientCanvas');
 </script>
-<!-- ══════════════ MODAL CHOIX TECHNICIEN ══════════════ -->
-<div class="modal-overlay" id="techModal">
-  <div class="modal-box">
-    <h2>👷 Bienvenue</h2>
-    <p>Sélectionnez votre nom pour commencer</p>
-    <div class="tech-list">
-      <button class="tech-btn" onclick="selectTech('Dany Sampaio')">Dany Sampaio</button>
-      <button class="tech-btn" onclick="selectTech('Ghenadi Pavlenco')">Ghenadi Pavlenco</button>
-      <button class="tech-btn" onclick="selectTech('Bedirhan Gunder')">Bedirhan Gunder</button>
-      <button class="tech-btn" onclick="selectTech('Olivier Simoes')">Olivier Simoes</button>
-      <button class="tech-btn" onclick="selectTech('Bruno Rodrigues')">Bruno Rodrigues</button>
-      <button class="tech-btn" onclick="selectTech('Alex Martins')">Alex Martins</button>
-      <button class="tech-btn" onclick="selectTech('Simao Quintas')">Simao Quintas</button>
-      <button class="tech-btn" onclick="selectTech('Leandro Perreira')">Leandro Perreira</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════ MODAL ENVOI BILAN ══════════════ -->
-<div class="send-modal" id="sendModal">
-  <div class="send-box">
-    <h3>📤 Envoyer le bilan</h3>
-    <p style="font-size:.82rem;color:var(--gris);margin-bottom:20px;">
-      Le bilan sera envoyé par email à <strong>sav.reports@societesimoes.com</strong> et enregistré dans Google Sheets.
-    </p>
-    <div style="background:rgba(0,0,0,.25);border-radius:6px;padding:14px;margin-bottom:16px;font-size:.82rem;color:var(--gris);">
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-        <span>Technicien</span><strong id="send-tech" style="color:var(--blanc)">—</strong>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-        <span>Client</span><strong id="send-client" style="color:var(--blanc)">—</strong>
-      </div>
-      <div style="display:flex;justify-content:space-between;margin-bottom:6px;">
-        <span>Équipement</span><strong id="send-equip" style="color:var(--blanc)">—</strong>
-      </div>
-      <div style="display:flex;justify-content:space-between;">
-        <span>Date</span><strong id="send-date" style="color:var(--blanc)">—</strong>
-      </div>
-    </div>
-    <div id="sendStatus" class="send-status"></div>
-    <div style="display:flex;gap:8px;margin-top:16px;">
-      <button class="btn btn-grey btn-sm" onclick="closeSendModal()" style="clip-path:none;border-radius:4px;flex:1;">Annuler</button>
-      <button class="btn btn-blue btn-sm" onclick="sendBilan()" id="btnSendConfirm" style="clip-path:none;border-radius:4px;flex:2;background:linear-gradient(135deg,#16a085,#1abc9c);">✅ Confirmer l'envoi</button>
-    </div>
-  </div>
-</div>
-
-<script>
-// ════════════════════════════════════════════════════
-// CONFIG — À REMPLIR APRÈS CRÉATION DES COMPTES
-// ════════════════════════════════════════════════════
-const EMAILJS_PUBLIC_KEY  = 'VOTRE_CLE_PUBLIQUE_EMAILJS';   // Ex: 'abc123XYZ'
-const EMAILJS_SERVICE_ID  = 'VOTRE_SERVICE_ID';             // Ex: 'service_simoes'
-const EMAILJS_TEMPLATE_ID = 'VOTRE_TEMPLATE_ID';            // Ex: 'template_bilan'
-const GOOGLE_SHEET_URL    = 'VOTRE_URL_APPS_SCRIPT';        // Ex: 'https://script.google.com/...'
-
-// ════════════════════════════════════════════════════
-// MODAL TECHNICIEN — Affiché au chargement
-// ════════════════════════════════════════════════════
-function selectTech(name) {
-  document.getElementById('techName').value = name;
-  document.getElementById('techSigNom').value = name;
-  document.getElementById('techModal').style.display = 'none';
-  showToast('👷 Bonjour ' + name.split(' ')[0] + ' !');
-}
-
-// ════════════════════════════════════════════════════
-// MODAL ENVOI
-// ════════════════════════════════════════════════════
-const equipLabelsMap = {
-  ps:'Porte sectionnelle', se:"Sas d'étanchéité", nq:'Niveleur de quai',
-  pso:'Porte souple', br:'Bloqueur de roues', rm:'Rideau métallique'
-};
-
-function openSendModal() {
-  const tech   = getVal('techName');
-  const client = getVal('clientName');
-  const equip  = equipLabelsMap[getVal('equipType')] || getVal('equipType') || '—';
-  const date   = getVal('bilanDate');
-  if (!tech)   { showToast('⚠️ Sélectionnez un technicien'); return; }
-  if (!client) { showToast('⚠️ Renseignez le nom du client'); return; }
-  document.getElementById('send-tech').textContent   = tech;
-  document.getElementById('send-client').textContent = client;
-  document.getElementById('send-equip').textContent  = equip;
-  document.getElementById('send-date').textContent   = date;
-  const st = document.getElementById('sendStatus');
-  st.className = 'send-status'; st.textContent = '';
-  document.getElementById('btnSendConfirm').disabled = false;
-  document.getElementById('sendModal').classList.add('show');
-}
-
-function closeSendModal() {
-  document.getElementById('sendModal').classList.remove('show');
-}
-
-async function sendBilan() {
-  const btn = document.getElementById('btnSendConfirm');
-  const st  = document.getElementById('sendStatus');
-  btn.disabled = true;
-  st.className = 'send-status loading';
-  st.textContent = '⏳ Envoi en cours…';
-
-  const data = {
-    bilan_num:         getVal('bilanNum'),
-    date:              getVal('bilanDate'),
-    technicien:        getVal('techName'),
-    client:            getVal('clientName'),
-    adresse:           getVal('clientAddr'),
-    contact:           getVal('contactSite'),
-    contrat:           getVal('contratNum'),
-    equip_type:        equipLabelsMap[getVal('equipType')] || getVal('equipType'),
-    equip_marque:      getVal('equipMarque'),
-    equip_serie:       getVal('equipSerie'),
-    equip_annee:       getVal('equipAnnee'),
-    equip_loc:         getVal('equipLoc'),
-    intervention_type: getVal('interventionType'),
-    bilan_global:      getVal('bilanGlobal'),
-    travaux_sans_delai:getVal('travauxSansDelai'),
-    travaux_semaines:  getVal('travauxSemaines'),
-    travaux_prochaine: getVal('travauxProchaine'),
-    pieces:            getVal('piecesRemplacees'),
-    resultat:          getVal('resultatIntervention'),
-    prochain_entretien:getVal('prochainEntretien'),
-    duree:             getVal('dureeIntervention'),
-    obs_client:        getVal('obsClient'),
-    sig_tech:          getVal('techSigNom'),
-    sig_client:        getVal('sigClientNom'),
-    date_signature:    getVal('dateSig'),
-    email_dest:        'sav.reports@societesimoes.com'
-  };
-
-  let emailOk = false;
-  let sheetOk = false;
-
-  // — Envoi Email via EmailJS —
-  try {
-    if (EMAILJS_PUBLIC_KEY !== 'VOTRE_CLE_PUBLIQUE_EMAILJS') {
-      emailjs.init({ publicKey: EMAILJS_PUBLIC_KEY });
-      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, data);
-      emailOk = true;
-    } else {
-      emailOk = null; // config manquante
-    }
-  } catch(e) {
-    console.error('EmailJS error:', e);
-  }
-
-  // — Envoi Google Sheets via Apps Script —
-  try {
-    if (GOOGLE_SHEET_URL !== 'VOTRE_URL_APPS_SCRIPT') {
-      await fetch(GOOGLE_SHEET_URL, {
-        method: 'POST',
-        mode: 'no-cors',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
-      sheetOk = true;
-    } else {
-      sheetOk = null; // config manquante
-    }
-  } catch(e) {
-    console.error('Google Sheets error:', e);
-  }
-
-  // Sauvegarde locale aussi
-  saveBilan();
-
-  // — Résultat —
-  if (emailOk === null && sheetOk === null) {
-    st.className = 'send-status err';
-    st.textContent = '⚙️ Configuration EmailJS et Google Sheets manquante. Bilan sauvegardé localement.';
-  } else if (emailOk && sheetOk) {
-    st.className = 'send-status ok';
-    st.textContent = '✅ Bilan envoyé par email et enregistré dans Google Sheets !';
-  } else if (emailOk) {
-    st.className = 'send-status ok';
-    st.textContent = '✅ Email envoyé ! (Google Sheets : vérifiez la configuration)';
-  } else if (sheetOk) {
-    st.className = 'send-status ok';
-    st.textContent = '✅ Enregistré dans Google Sheets ! (Email : vérifiez la configuration)';
-  } else {
-    st.className = 'send-status err';
-    st.textContent = '❌ Erreur d\'envoi. Bilan sauvegardé localement. Vérifiez votre connexion.';
-  }
-  btn.disabled = false;
-}
-// ════════════════════════════════════════════════════
-// PWA — Service Worker
-// ════════════════════════════════════════════════════
-if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('./sw.js').catch(console.error);
-}
-</script>
 </body>
+</html>
